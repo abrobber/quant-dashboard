@@ -125,7 +125,7 @@ def estrategia_variable(velas, retorno):
 st.set_page_config(page_title="Quant Panel Escalado Variable", layout="wide")
 st.title("📘 Dashboard Adaptativo con Escalado Variable")
 
-page = st.sidebar.radio("📂 Selecciona una sección", ["Simulación Individual", "Simulación en Lote"])
+page = st.sidebar.radio("📂 Selecciona una sección", ["Simulación Individual", "Simulación en Lote", "Crecimiento Compuesto"])
 
 
 
@@ -191,3 +191,26 @@ elif page == "Simulación en Lote":
             st.metric("% Perdedores", f"{perdedoras*100:.1f}%")
 
         st.success(f"📘 Total de sesiones: {n_sesiones} — payout {retorno*100:.0f}% aplicado correctamente.")
+
+elif page == "Crecimiento Compuesto":
+    st.header("📈 Simulación de Crecimiento Compuesto")
+
+    sesiones = st.sidebar.slider("Número de sesiones", 10, 1000, 30, step=10)
+    rendimiento_medio = st.sidebar.slider("Rendimiento promedio por sesión (%)", 0.5, 3.0, 1.42, step=0.1)
+    desviacion = st.sidebar.slider("Desviación estándar (%)", 0.5, 3.0, 1.3, step=0.1)
+    bankroll_inicial = st.sidebar.number_input("Bankroll inicial", value=100.0)
+
+    if st.sidebar.button("🚀 Simular crecimiento"):
+        historial = [bankroll_inicial]
+        bankroll = bankroll_inicial
+
+        for _ in range(sesiones):
+            r = random.gauss(rendimiento_medio, desviacion) / 100
+            bankroll *= (1 + r)
+            historial.append(bankroll)
+
+        st.subheader("📊 Evolución del Bankroll")
+        st.line_chart(historial)
+
+        st.metric("Bankroll final", f"{bankroll:.2f}")
+        st.metric("Rendimiento total", f"{(bankroll / bankroll_inicial - 1) * 100:.2f}%")
