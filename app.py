@@ -115,7 +115,7 @@ page = st.sidebar.radio("📂 Selecciona una sección", ["Simulación Individual
 # -----------------------------
 # 📊 Ejecución
 # -----------------------------
-elif page == "Simulación Individual":
+if page == "Simulación Individual":
     st.sidebar.header("🧩 Parámetros de Sesión")
     verdes = st.sidebar.slider("Cantidad de velas verdes", 30, 45, 35)
     rojas = st.sidebar.slider("Cantidad de velas rojas", 15, 30, 25)
