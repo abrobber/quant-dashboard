@@ -28,6 +28,18 @@ def escalado_por_momentum(momentum):
     else:
         return []
 
+def es_patron_falso(ult_10, momentum):
+    # Señal débil por momentum
+    if momentum < 17:
+        return True
+    # Mezcla de colores (no hay dirección clara)
+    if ult_10.count('V') > 4 and ult_10.count('R') > 4:
+        return True
+    # Las últimas 2 velas son diferentes (ruptura de racha)
+    if len(ult_10) >= 2 and ult_10[-1] != ult_10[-2]:
+        return True
+    return False
+
 # -----------------------------
 # 🎯 Simulación de sesión
 # -----------------------------
@@ -55,6 +67,11 @@ def estrategia_variable(velas, retorno):
 
         color, momentum = calcular_momentum(ult_10)
         escalado = escalado_por_momentum(momentum)
+
+if es_patron_falso(ult_10, momentum):
+    historial.append((i+1, vela, 'OMITIR (falsa)', '-', bankroll))
+    estados.append('🔴 FALSA')
+    continue
 
         if not color or not escalado:
             historial.append((i+1, vela, 'OMITIR', '-', bankroll))
