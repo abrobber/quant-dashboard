@@ -108,6 +108,8 @@ def estrategia_variable(velas, retorno):
 st.set_page_config(page_title="Quant Panel Escalado Variable", layout="wide")
 st.title("📘 Dashboard Adaptativo con Escalado Variable")
 
+page = st.sidebar.radio("📂 Selecciona una sección", ["Simulación Individual", "Simulación en Lote"])
+
 st.sidebar.header("🧩 Parámetros de Sesión")
 verdes = st.sidebar.slider("Cantidad de velas verdes", 30, 45, 35)
 rojas = st.sidebar.slider("Cantidad de velas rojas", 15, 30, 25)
@@ -133,3 +135,41 @@ if simular:
     estado_final = df["Estado"].iloc[-1]
     color = "#28a745" if "🟢" in estado_final or "🚀" in estado_final else "#ffc107" if "🟡" in estado_final else "#dc3545"
     st.markdown(f"<h2 style='color:{color}'>{estado_final}</h2>", unsafe_allow_html=True)
+
+elif page == "Simulación en Lote":
+    st.header("📊 Simulación en Lote y Análisis Consolidado")
+
+    n_sesiones = st.sidebar.slider("Número de sesiones", 100, 2000, 1000, step=100)
+    retorno = st.sidebar.slider("Retorno por acierto (%)", 50, 100, 70) / 100.0
+    verdes = st.sidebar.slider("Velas verdes por sesión", 30, 45, 35)
+    rojas = st.sidebar.slider("Velas rojas por sesión", 15, 30, 25)
+
+    if st.sidebar.button("🚀 Ejecutar simulaciones"):
+        resultados = []
+        for _ in range(n_sesiones):
+            velas = ['V'] * verdes + ['R'] * rojas
+            random.shuffle(velas)
+            df = estrategia_variable(velas, retorno)
+            final = df["Bankroll"].iloc[-1]
+            resultados.append(final)
+
+        resultados = pd.Series(resultados)
+        ganadoras = (resultados > 100).mean()
+        perdedoras = (resultados < 100).mean()
+        neutras = (resultados == 100).mean()
+
+        st.subheader("📈 Distribución de resultados")
+        st.bar_chart(resultados.value_counts().sort_index())
+
+        st.subheader("📊 Análisis Consolidado")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("Promedio final", f"{resultados.mean():.2f}")
+            st.metric("Desviación estándar", f"{resultados.std():.2f}")
+            st.metric("Mejor sesión", f"{resultados.max():.2f}")
+        with col2:
+            st.metric("Peor sesión", f"{resultados.min():.2f}")
+            st.metric("% Ganadoras", f"{ganadoras*100:.1f}%")
+            st.metric("% Perdedores", f"{perdedoras*100:.1f}%")
+
+        st.success(f"📘 Total de sesiones: {n_sesiones} — payout {retorno*100:.0f}% aplicado correctamente.")
