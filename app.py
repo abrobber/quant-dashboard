@@ -68,10 +68,10 @@ def estrategia_variable(velas, retorno):
         color, momentum = calcular_momentum(ult_10)
         escalado = escalado_por_momentum(momentum)
 
-if es_patron_falso(ult_10, momentum):
-    historial.append((i+1, vela, 'OMITIR (falsa)', '-', bankroll))
-    estados.append('🔴 FALSA')
-    continue
+        if es_patron_falso(ult_10, momentum):
+            historial.append((i+1, vela, 'OMITIR (falsa)', '-', bankroll))
+            estados.append('🔴 FALSA')
+            continue
 
         if not color or not escalado:
             historial.append((i+1, vela, 'OMITIR', '-', bankroll))
