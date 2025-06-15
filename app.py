@@ -110,31 +110,32 @@ st.title("📘 Dashboard Adaptativo con Escalado Variable")
 
 page = st.sidebar.radio("📂 Selecciona una sección", ["Simulación Individual", "Simulación en Lote"])
 
-st.sidebar.header("🧩 Parámetros de Sesión")
-verdes = st.sidebar.slider("Cantidad de velas verdes", 30, 45, 35)
-rojas = st.sidebar.slider("Cantidad de velas rojas", 15, 30, 25)
-retorno = st.sidebar.slider("Retorno por acierto (%)", 50, 100, 70) / 100.0
-simular = st.sidebar.button("🎲 Simular Sesión")
+
 
 # -----------------------------
 # 📊 Ejecución
 # -----------------------------
-
-if simular:
-    velas = ['V'] * verdes + ['R'] * rojas
-    random.shuffle(velas)
-    df = estrategia_variable(velas, retorno)
-
-    st.subheader("📄 Sesión")
-    st.dataframe(df, use_container_width=True)
-
-    st.subheader("📈 Evolución del Bankroll")
-    st.line_chart(df["Bankroll"])
+elif page == "Simulación Individual":
+    st.sidebar.header("🧩 Parámetros de Sesión")
+    verdes = st.sidebar.slider("Cantidad de velas verdes", 30, 45, 35)
+    rojas = st.sidebar.slider("Cantidad de velas rojas", 15, 30, 25)
+    retorno = st.sidebar.slider("Retorno por acierto (%)", 50, 100, 70) / 100.0
+    simular = st.sidebar.button("🎲 Simular Sesión")
+    if simular:
+        velas = ['V'] * verdes + ['R'] * rojas
+        random.shuffle(velas)
+        df = estrategia_variable(velas, retorno)
     
-    st.subheader("🚦 Estado final")
-    estado_final = df["Estado"].iloc[-1]
-    color = "#28a745" if "🟢" in estado_final or "🚀" in estado_final else "#ffc107" if "🟡" in estado_final else "#dc3545"
-    st.markdown(f"<h2 style='color:{color}'>{estado_final}</h2>", unsafe_allow_html=True)
+        st.subheader("📄 Sesión")
+        st.dataframe(df, use_container_width=True)
+    
+        st.subheader("📈 Evolución del Bankroll")
+        st.line_chart(df["Bankroll"])
+        
+        st.subheader("🚦 Estado final")
+        estado_final = df["Estado"].iloc[-1]
+        color = "#28a745" if "🟢" in estado_final or "🚀" in estado_final else "#ffc107" if "🟡" in estado_final else "#dc3545"
+        st.markdown(f"<h2 style='color:{color}'>{estado_final}</h2>", unsafe_allow_html=True)
 
 elif page == "Simulación en Lote":
     st.header("📊 Simulación en Lote y Análisis Consolidado")
