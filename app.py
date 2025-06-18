@@ -114,6 +114,14 @@ def estrategia_variable(velas, retorno):
             estados.append('🛑 TRAILING')
             break
 
+        if modo_proteccion:
+            estados.append("🛡️ ADAPTATIVO")
+        elif resultado == "✅ Gana":
+            estados.append("🔵 ESTABILIZADO")
+        else:
+            estados.append("🟢 NORMAL")
+
+
     df = pd.DataFrame(historial, columns=["Ronda", "Vela", "Apuesta", "Resultado", "Bankroll"])
     df["Estado"] = estados + [""] * (len(df) - len(estados))
     return df
