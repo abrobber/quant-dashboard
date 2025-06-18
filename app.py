@@ -274,12 +274,7 @@ elif page == "AutoAdaptativo":
     activaciones_predictivo = 0
     bitacora_adaptativa = []
     estados = []
-    if modo_proteccion:
-        estados.append("🛡️ ADAPTATIVO")
-    elif resultado == "✅ Gana":
-        estados.append("🔵 ESTABILIZADO")
-    else:
-        estados.append("🟢 NORMAL")
+
     st.header("🧠 Bitácora de Reentrenamiento Adaptativo")
 
     df_adapt = pd.DataFrame(bitacora_adaptativa, columns=["Ronda", "Resultado", "Racha Negativa", "Estado", "Comentario"])
