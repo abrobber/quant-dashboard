@@ -129,6 +129,14 @@ st.title("📘 Dashboard Adaptativo con Escalado Variable")
 
 page = st.sidebar.radio("📂 Sección", ["Simulación Individual", "Simulación en Lote", "Crecimiento Compuesto", "Simulación Individual 2", "AutoAdaptativo"])
 
+# 🎛️ Configuración de adaptabilidad
+auto_predictivo = st.sidebar.checkbox("🔮 Modo AutoAdaptativo", value=True)
+racha_negativa = 0
+modo_proteccion = False
+activaciones_predictivo = 0
+bitacora_adaptativa = []
+historial = []
+estados = []
 
 
 
@@ -221,14 +229,7 @@ elif page == "Crecimiento Compuesto":
 # 📈 Simulación por sesiones
 elif page == "Simulación Individual 2":
     st.header("📊 Simulación Individual con Adaptabilidad")
-    # 🎛️ Configuración de adaptabilidad
-    auto_predictivo = st.sidebar.checkbox("🔮 Modo AutoAdaptativo", value=True)
-    racha_negativa = 0
-    modo_proteccion = False
-    activaciones_predictivo = 0
-    bitacora_adaptativa = []
-    historial = []
-    estados = []
+
 
     for i in range(100):  # 100 sesiones simuladas
         vela = random.choice(["V", "R"])
