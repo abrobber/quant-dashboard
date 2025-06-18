@@ -267,14 +267,6 @@ elif page == "Simulación Individual 2":
 
 # 🧠 Pestaña de adaptabilidad
 elif page == "AutoAdaptativo":
-    # 🎛️ Configuración de adaptabilidad
-    auto_predictivo = st.sidebar.checkbox("🔮 Modo AutoAdaptativo", value=True)
-    racha_negativa = 0
-    modo_proteccion = False
-    activaciones_predictivo = 0
-    bitacora_adaptativa = []
-    estados = []
-
     st.header("🧠 Bitácora de Reentrenamiento Adaptativo")
 
     df_adapt = pd.DataFrame(bitacora_adaptativa, columns=["Ronda", "Resultado", "Racha Negativa", "Estado", "Comentario"])
@@ -282,8 +274,6 @@ elif page == "AutoAdaptativo":
 
     st.markdown("### 📊 Resumen")
     st.metric("🔁 Activaciones", activaciones_predictivo)
-    if not estados:
-        estados = ["🟢 NORMAL"] * len(bitacora_adaptativa)  # Evita lista vacía
     st.metric("🛡️ Entradas filtradas por protección", estados.count("🛡️ ADAPTATIVO"))
 
     st.markdown("### 📉 Evolución de la racha negativa")
