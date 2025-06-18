@@ -114,12 +114,6 @@ def estrategia_variable(velas, retorno):
             estados.append('🛑 TRAILING')
             break
 
-        if modo_proteccion:
-            estados.append("🛡️ ADAPTATIVO")
-        elif resultado == "✅ Gana":
-            estados.append("🔵 ESTABILIZADO")
-        else:
-            estados.append("🟢 NORMAL")
 
 
     df = pd.DataFrame(historial, columns=["Ronda", "Vela", "Apuesta", "Resultado", "Bankroll"])
@@ -134,14 +128,6 @@ st.set_page_config(page_title="Quant Panel Escalado Variable", layout="wide")
 st.title("📘 Dashboard Adaptativo con Escalado Variable")
 
 page = st.sidebar.radio("📂 Sección", ["Simulación Individual", "Simulación en Lote", "Crecimiento Compuesto", "Simulación Individual 2", "AutoAdaptativo"])
-
-# 🎛️ Configuración de adaptabilidad
-auto_predictivo = st.sidebar.checkbox("🔮 Modo AutoAdaptativo", value=True)
-racha_negativa = 0
-modo_proteccion = False
-activaciones_predictivo = 0
-bitacora_adaptativa = []
-
 
 
 
@@ -235,7 +221,12 @@ elif page == "Crecimiento Compuesto":
 # 📈 Simulación por sesiones
 elif page == "Simulación Individual 2":
     st.header("📊 Simulación Individual con Adaptabilidad")
-
+    # 🎛️ Configuración de adaptabilidad
+    auto_predictivo = st.sidebar.checkbox("🔮 Modo AutoAdaptativo", value=True)
+    racha_negativa = 0
+    modo_proteccion = False
+    activaciones_predictivo = 0
+    bitacora_adaptativa = []
     historial = []
     estados = []
 
@@ -276,6 +267,19 @@ elif page == "Simulación Individual 2":
 
 # 🧠 Pestaña de adaptabilidad
 elif page == "AutoAdaptativo":
+    # 🎛️ Configuración de adaptabilidad
+    auto_predictivo = st.sidebar.checkbox("🔮 Modo AutoAdaptativo", value=True)
+    racha_negativa = 0
+    modo_proteccion = False
+    activaciones_predictivo = 0
+    bitacora_adaptativa = []
+    estados = []
+    if modo_proteccion:
+        estados.append("🛡️ ADAPTATIVO")
+    elif resultado == "✅ Gana":
+        estados.append("🔵 ESTABILIZADO")
+    else:
+        estados.append("🟢 NORMAL")
     st.header("🧠 Bitácora de Reentrenamiento Adaptativo")
 
     df_adapt = pd.DataFrame(bitacora_adaptativa, columns=["Ronda", "Resultado", "Racha Negativa", "Estado", "Comentario"])
