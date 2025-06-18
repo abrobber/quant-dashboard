@@ -125,7 +125,16 @@ def estrategia_variable(velas, retorno):
 st.set_page_config(page_title="Quant Panel Escalado Variable", layout="wide")
 st.title("📘 Dashboard Adaptativo con Escalado Variable")
 
-page = st.sidebar.radio("📂 Selecciona una sección", ["Simulación Individual", "Simulación en Lote", "Crecimiento Compuesto"])
+page = st.sidebar.radio("📂 Sección", ["Simulación Individual", "Simulación en Lote", "Crecimiento Compuesto", "Simulación Individual 2", "AutoAdaptativo"])
+
+# 🎛️ Configuración de adaptabilidad
+auto_predictivo = st.sidebar.checkbox("🔮 Modo AutoAdaptativo", value=True)
+racha_negativa = 0
+modo_proteccion = False
+activaciones_predictivo = 0
+bitacora_adaptativa = []
+
+
 
 
 
@@ -214,3 +223,64 @@ elif page == "Crecimiento Compuesto":
 
         st.metric("Bankroll final", f"{bankroll:.2f}")
         st.metric("Rendimiento total", f"{(bankroll / bankroll_inicial - 1) * 100:.2f}%")
+
+# 📈 Simulación por sesiones
+elif page == "Simulación Individual 2":
+    st.header("📊 Simulación Individual con Adaptabilidad")
+
+    historial = []
+    estados = []
+
+    for i in range(100):  # 100 sesiones simuladas
+        vela = random.choice(["V", "R"])
+        resultado = random.choice(["✅ Gana", "❌ Pierde"])
+        
+        # 🔁 Racha negativa
+        if resultado == "❌ Pierde":
+            racha_negativa += 1
+        else:
+            racha_negativa = 0
+
+        # 🔒 Activar protección si acumula 3 fallas seguidas
+        if auto_predictivo and not modo_proteccion and racha_negativa >= 3:
+            modo_proteccion = True
+            activaciones_predictivo += 1
+            st.warning(f"🛡️ Protección activada (racha {racha_negativa})")
+
+        # 🚦 Semáforo táctico
+        if modo_proteccion:
+            estado_adaptativo = "🛡️ ADAPTATIVO"
+        elif resultado == "✅ Gana":
+            estado_adaptativo = "🔵 ESTABILIZADO"
+        else:
+            estado_adaptativo = "🟢 NORMAL"
+
+        # 🔍 Guardar en bitácora adaptativa
+        bitacora_adaptativa.append((i + 1, resultado, racha_negativa, estado_adaptativo, "Filtro reforzado" if modo_proteccion else "Normal"))
+
+        # 📊 Registro de cada ronda en tabla principal
+        historial.append((i + 1, vela, resultado, estado_adaptativo))
+        estados.append(estado_adaptativo)
+
+    # 📋 Mostrar tabla de la sesión
+    df = pd.DataFrame(historial, columns=["Ronda", "Vela", "Resultado", "Estado Adaptativo"])
+    st.dataframe(df)
+
+# 🧠 Pestaña de adaptabilidad
+elif page == "AutoAdaptativo":
+    st.header("🧠 Bitácora de Reentrenamiento Adaptativo")
+
+    df_adapt = pd.DataFrame(bitacora_adaptativa, columns=["Ronda", "Resultado", "Racha Negativa", "Estado", "Comentario"])
+    st.dataframe(df_adapt)
+
+    st.markdown("### 📊 Resumen")
+    st.metric("🔁 Activaciones", activaciones_predictivo)
+    st.metric("🛡️ Entradas filtradas por protección", estados.count("🛡️ ADAPTATIVO"))
+
+    st.markdown("### 📉 Evolución de la racha negativa")
+    plt.plot(df_adapt["Racha Negativa"], color="purple", marker="o")
+    plt.title("📈 Evolución de la Racha Negativa")
+    plt.xlabel("Ronda")
+    plt.ylabel("Racha")
+    st.pyplot(plt)
+
