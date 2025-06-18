@@ -283,6 +283,8 @@ elif page == "AutoAdaptativo":
 
     st.markdown("### 📊 Resumen")
     st.metric("🔁 Activaciones", activaciones_predictivo)
+    if not estados:
+        estados = ["🟢 NORMAL"] * len(bitacora_adaptativa)  # Evita lista vacía
     st.metric("🛡️ Entradas filtradas por protección", estados.count("🛡️ ADAPTATIVO"))
 
     st.markdown("### 📉 Evolución de la racha negativa")
