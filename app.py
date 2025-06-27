@@ -2,10 +2,31 @@ import streamlit as st
 import pandas as pd
 import random
 import matplotlib.pyplot as plt
+import requests
 
 # -----------------------------
 # ⚙️ Lógica de momentum y escalado
 # -----------------------------
+
+def obtener_velas_twelve_data(simbolo="EUR/USD", intervalo="1min", cantidad=100):
+    api_key = "7a8323602dee4ac382196181cc32a8a7"  # 🔑 Pega tu API Key de Twelve Data aquí
+    url = f"https://api.twelvedata.com/time_series?symbol={simbolo}&interval={intervalo}&outputsize={cantidad}&apikey={api_key}"
+    try:
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()
+        data = response.json().get("values", [])
+        return data[::-1]  # Más antiguas primero
+    except Exception as e:
+        st.error(f"🌐 Error al obtener datos de Twelve Data: {e}")
+        return []
+
+def convertir_a_colores(data):
+    velas = []
+    for vela in data:
+        open_, close = float(vela["open"]), float(vela["close"])
+        velas.append("V" if close > open_ else "R")
+    return velas
+
 
 def calcular_momentum(ult_10):
     if len(ult_10) < 10:
@@ -149,9 +170,25 @@ if page == "Simulación Individual":
     rojas = st.sidebar.slider("Cantidad de velas rojas", 15, 30, 25)
     retorno = st.sidebar.slider("Retorno por acierto (%)", 50, 100, 70) / 100.0
     simular = st.sidebar.button("🎲 Simular Sesión")
+    st.sidebar.header("📡 Datos Reales desde Twelve Data")
+    usar_api = st.sidebar.checkbox("💹 Usar datos reales del mercado", value=False)
+    
+    if usar_api:
+        activo = st.sidebar.text_input("Símbolo del activo", value="EUR/USD")
+        timeframe = st.sidebar.selectbox("Timeframe", ["1min", "5min", "15min", "30min", "1h", "4h", "1day"])
+        n_velas = st.sidebar.slider("Cantidad de velas a usar", 30, 250, 100)
+
     if simular:
-        velas = ['V'] * verdes + ['R'] * rojas
-        random.shuffle(velas)
+        if usar_api:
+            data = obtener_velas_twelve_data(activo, timeframe, n_velas)
+            velas = convertir_a_colores(data)
+            if not velas:
+                st.error("No se pudieron generar velas desde la API.")
+                st.stop()
+        else:
+            velas = ['V'] * verdes + ['R'] * rojas
+            random.shuffle(velas)
+    
         df = estrategia_variable(velas, retorno)
     
         st.subheader("📄 Sesión")
@@ -159,11 +196,12 @@ if page == "Simulación Individual":
     
         st.subheader("📈 Evolución del Bankroll")
         st.line_chart(df["Bankroll"])
-        
+    
         st.subheader("🚦 Estado final")
         estado_final = df["Estado"].iloc[-1]
         color = "#28a745" if "🟢" in estado_final or "🚀" in estado_final else "#ffc107" if "🟡" in estado_final else "#dc3545"
         st.markdown(f"<h2 style='color:{color}'>{estado_final}</h2>", unsafe_allow_html=True)
+
 
 elif page == "Simulación en Lote":
     st.header("📊 Simulación en Lote y Análisis Consolidado")
